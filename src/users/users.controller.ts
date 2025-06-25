@@ -3,11 +3,15 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  Res,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { CreateUserDto } from './dtos/createUser.dto';
 
 @Controller('users')
 export class UsersController {
@@ -22,18 +26,16 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() userData: any): any {
-    console.log(userData);
+  create(@Body() userData: CreateUserDto) {
     return userData;
   }
 
   @Patch(':username')
-  update(@Param('username') username: string): string {
-    return username;
+  update(@Param('username') username: string, @Body() input) {
+    return input;
   }
 
   @Delete(':username')
-  remove(@Param('username') username: string): string {
-    return username;
-  }
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('username') username: string) {}
 }
