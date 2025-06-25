@@ -18,7 +18,7 @@ import { v4 as uuid } from 'uuid';
 
 @Controller('users')
 export class UsersController {
-  private readonly users: UserEntity[] = [];
+  private users: UserEntity[] = [];
 
   @Get()
   find(): UserEntity[] {
@@ -44,15 +44,23 @@ export class UsersController {
     return newUser;
   }
 
-  @Patch(':username')
-  update(
-    @Param('username') username: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return updateUserDto;
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    // 1) find the element index we want to update
+    const index = this.users.findIndex((user) => user.id === id);
+    // 2) update the element
+    this.users[index] = { ...this.users[index], ...updateUserDto };
+
+    return this.users[index];
   }
 
-  @Delete(':username')
+  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('username') username: string) {}
+  remove(@Param('id') id: string) {
+    this.users = this.users.filter((user) => user.id !== id);
+    // 1) find the element index we want to remove
+    //const index = this.users.findIndex((user) => user.id === id);
+    // 2) remove the element
+    //this.users.splice(index, 1);
+  }
 }
