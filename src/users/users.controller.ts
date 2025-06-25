@@ -5,30 +5,43 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
-  Res,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { UserEntity } from './user.entity';
+import { v4 as uuid } from 'uuid';
 
 @Controller('users')
 export class UsersController {
+  private readonly users: UserEntity[] = [];
+
   @Get()
-  find(): string[] {
-    return ['user1', 'user2', 'user3'];
+  find(): UserEntity[] {
+    return this.users;
   }
 
-  @Get(':username')
-  findOne(@Param('username') username: string): string {
-    return username;
+  @Get(':id')
+  findOne(@Param('id') id: string): UserEntity {
+    const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
   }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    return createUserDto;
+    const newUser: UserEntity = {
+      ...createUserDto,
+      id: uuid(),
+    };
+    this.users.push(newUser);
+    return newUser;
   }
 
   @Patch(':username')
