@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -7,23 +16,24 @@ export class UsersController {
     return ['user1', 'user2', 'user3'];
   }
 
-  @Get()
-  findOne(): string {
-    return 'Find one user';
+  @Get(':username')
+  findOne(@Param('username') username: string): string {
+    return username;
   }
 
   @Post()
-  create(): string {
-    return 'Create new user';
+  create(@Body() userData: any): any {
+    console.log(userData);
+    return userData;
   }
 
-  @Patch()
-  update(): string {
-    return 'Update user';
+  @Patch(':username')
+  update(@Param('username') username: string): string {
+    return username;
   }
 
-  @Delete()
-  remove(): string {
-    return 'Remove user';
+  @Delete(':username')
+  remove(@Param('username') username: string): string {
+    return username;
   }
 }
