@@ -11,7 +11,8 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { CreateUserDto } from './dtos/createUser.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -26,13 +27,16 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() userData: CreateUserDto) {
-    return userData;
+  create(@Body() createUserDto: CreateUserDto) {
+    return createUserDto;
   }
 
   @Patch(':username')
-  update(@Param('username') username: string, @Body() input) {
-    return input;
+  update(
+    @Param('username') username: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return updateUserDto;
   }
 
   @Delete(':username')
