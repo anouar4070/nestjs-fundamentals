@@ -6,7 +6,7 @@ export class CreateUserDto {
   @Length(3, 20)
   readonly username: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'Invalid Email' })
   readonly email: string;
 
   @IsString()
