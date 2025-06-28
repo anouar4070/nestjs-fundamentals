@@ -5,25 +5,23 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserEntity } from './user.entity';
-import { v4 as uuid } from 'uuid';
+import { UserService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  private users: UserEntity[] = [];
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   find(): UserEntity[] {
-    return this.users;
+    return this.userService.findUsers();
   }
 
   @Get(':id')
@@ -31,11 +29,7 @@ export class UsersController {
     @Param('id', ParseUUIDPipe)
     id: string,
   ): UserEntity {
-    const user = this.users.find((user) => user.id === id);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return user;
+    return this.userService.findUserById(id);
   }
 
   @Post()
@@ -43,12 +37,7 @@ export class UsersController {
     @Body()
     createUserDto: CreateUserDto,
   ) {
-    const newUser: UserEntity = {
-      ...createUserDto,
-      id: uuid(),
-    };
-    this.users.push(newUser);
-    return newUser;
+    return this.userService.createUser(createUserDto);
   }
 
   @Patch(':id')
@@ -57,22 +46,13 @@ export class UsersController {
     @Body()
     updateUserDto: UpdateUserDto,
   ) {
-    // 1) find the element index we want to update
-    const index = this.users.findIndex((user) => user.id === id);
-    // 2) update the element
-    this.users[index] = { ...this.users[index], ...updateUserDto };
-
-    return this.users[index];
+    return this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    this.users = this.users.filter((user) => user.id !== id);
-    // 1) find the element index we want to remove
-    //const index = this.users.findIndex((user) => user.id === id);
-    // 2) remove the element
-    //this.users.splice(index, 1);
+    this.userService.deleteUser(id);
   }
 }
 
